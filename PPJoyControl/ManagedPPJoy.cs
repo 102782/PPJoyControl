@@ -53,7 +53,7 @@ namespace PPJoyControler
             uint nInBufferSize,                     // 入力バッファのバイト単位のサイズ
             IntPtr lpOutBuffer,                     // 出力データを受け取るバッファへのポインタ
             uint nOutBufferSize,                    // 出力バッファのバイト単位のサイズ
-            ref uint lpBytesReturned,               // バイト数を受け取る変数へのポインタ
+            out uint lpBytesReturned,               // バイト数を受け取る変数へのポインタ
             IntPtr lpOverlapped                     // 非同期動作を表す構造体へのポインタ
         );
 
@@ -84,6 +84,8 @@ namespace PPJoyControler
 
         public ManagedPPJoy(VIRTUAL_JOYSTICK_DEVICE device)
         {
+            this.state.Analog = new int[8];
+            this.state.Digital = new byte[16];
             this.state.Signature = 0;
             this.state.NumAnalog = 0;
             this.state.NumDigital = 0;
@@ -123,7 +125,7 @@ namespace PPJoyControler
             if (!this.isHandleOpend) return;
             uint RetSize = 0;
             if (!DeviceIoControl(this.handle, IOCTL_PPORTJOY_SET_STATE(), 
-                ref this.state, (uint)Marshal.SizeOf(this.state), IntPtr.Zero, 0, ref RetSize, IntPtr.Zero))
+                ref this.state, (uint)Marshal.SizeOf(this.state), IntPtr.Zero, 0, out RetSize, IntPtr.Zero))
             {
                 int errorCode = GetLastError();
                 if (errorCode == 2)
@@ -152,28 +154,14 @@ namespace PPJoyControler
 
         public void SetAnalog(uint index, double value)
         {
-            if (!this.isHandleOpend) return;
-            if (index >= NUM_ANALOG) return;
-            unsafe
-            {
-                fixed (int* p = this.state.Analog)
-                {
-                    p[index] = (int)((PPJOY_AXIS_MAX - PPJOY_AXIS_MIN) * value);
-                }
-            }
+            if (!this.isHandleOpend || index >= NUM_ANALOG) return;
+            this.state.Analog[index] = (int)((PPJOY_AXIS_MAX - PPJOY_AXIS_MIN) * value);
         }
 
         public void SetDigital(uint index, byte value)
         {
-            if (!this.isHandleOpend) return;
-            if (index >= NUM_DIGITAL) return;
-            unsafe
-            {
-                fixed (byte* p = this.state.Digital)
-                {
-                    p[index] = value;
-                }
-            }
+            if (!this.isHandleOpend || index >= NUM_DIGITAL) return;
+            this.state.Digital[index] = value;
         }
 
         public void SetAnalogDefault()

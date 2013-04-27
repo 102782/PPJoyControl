@@ -5,48 +5,50 @@ namespace PPJoyControler
 {
 
     [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct JOYSTICK_SET_STATE
+    internal struct JOYSTICK_SET_STATE
     {
         [FieldOffset(0)]
-        uint Version;
-        [FieldOffset(4)]
-        fixed byte Data[1];
+        public uint Version;
+        [FieldOffset(4), MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+        public byte[] Data;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal unsafe struct JOYSTICK_STATE
+    internal struct JOYSTICK_STATE
     {
         public uint Signature;
         public byte NumAnalog;
-        public fixed int Analog[8];
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public int[] Analog;
         public byte NumDigital;
-        public fixed byte Digital[16];
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] Digital;
     }
 
     [StructLayout(LayoutKind.Explicit)]
     internal struct SECURITY_ATTRIBUTES
     {
         [FieldOffset(0)]
-        uint nLength;
+        public uint nLength;
         [FieldOffset(4)]
-        IntPtr lpSecurityDescriptor;
+        public IntPtr lpSecurityDescriptor;
         [FieldOffset(8)]
-        bool bInheritHandle;
+        public bool bInheritHandle;
     }
 
     [StructLayout(LayoutKind.Explicit)]
     internal struct OVERLAPPED
     {
         [FieldOffset(0)]
-        uint Internal;
+        public uint Internal;
         [FieldOffset(4)]
-        uint InternalHigh;
+        public uint InternalHigh;
         [FieldOffset(8)]
-        uint Offset;
+        public uint Offset;
         [FieldOffset(12)]
-        uint OffsetHigh;
+        public uint OffsetHigh;
         [FieldOffset(16)]
-        IntPtr hEvent;
+        public IntPtr hEvent;
     }
 
 }
