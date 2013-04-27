@@ -135,6 +135,11 @@ namespace PPJoyControler
             SetPPJDefault();
         }
 
+        public bool IsPushedDown(PAD_BUTTON_CODE code)
+        {
+            return (GetState() & (int)code) != 0;
+        }
+
         private void SetStateToPPJ()
         {
             if (this.state.IsState((int)PAD_BUTTON_CODE.UP)) { this.ppj.SetAnalog(0, 1); }
